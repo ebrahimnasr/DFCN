@@ -1,4 +1,4 @@
-# DFCN
+# ebrahimnasr/DFCN
 The code, related to skin lesion segmentation, is provided here and segmentation results are accessible in the "Result" folder.
 DFCN is implemented on "caffe" framework; thus, your system requires "caffe" framework as prerequisite to run this project.
 
