@@ -1,24 +1,19 @@
-name:  "CaffeNet"
+# Enter your network definition here.
+# Use Shift+Enter to update the visualization.
+# Enter your network definition here.
+# Use Shift+Enter to update the visualization.
+# Enter your network definition here.
+# Use Shift+Enter to update the visualization.
+
+name: "DFCN"
 input: "GlobalPatch"
-input_shape{
+  input_shape{
 	dim: 1
 	dim: 3
-	dim: 411
-	dim: 411
+	dim: 283 #change the size of image here
+	dim: 283
 }
 
-#=================================================================================================================
-#==============================Global Path========================================================================
-#=================================================================================================================
-
-
-
-
-
-#=================================================================================================================
-#==============================Global Path========================================================================
-#=================================================================================================================
-#=================================================================================================================
 
 layer {
   name: "G_L1_C1"
@@ -44,18 +39,18 @@ layer {
     }
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
+layer { 
+	bottom: 'G_L1_C1'	top: 'G_L1_C1'  name: 'G_L1_C1_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'G_L1_C1' top: 'G_L1_C1' name: 'G_L1_C1_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
+}
 #183*183*32
 
 layer {
@@ -64,10 +59,6 @@ layer {
   bottom: "G_L1_C1"
   top: "G_L1_C1"
 }
-
-
-
-
 
 layer {
   name: "G_L1_C2"
@@ -91,6 +82,18 @@ layer {
       type: "constant"
     }
   }
+}
+layer { 
+	bottom: 'G_L1_C2'	top: 'G_L1_C2'  name: 'G_L1_C2_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'G_L1_C2' top: 'G_L1_C2' name: 'G_L1_C2_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
 }
 #181*181*32
 
@@ -118,17 +121,17 @@ layer {
 }
 #180*180*
 layer {
-  type: "Python"
+  type: "ReshapePooling"
   name: "reshape_G_L1_P_1"
   top:  "G_L1_P"
   bottom: "G_L1_P_1"
-  python_param {
-    module: "ReshapeLayers"
-    layer: "ReshapePoolingLayer"
-    param_str: "'level': 0"
+  crop_param {
+    num_cat: 0
   }
+
 }
 #180*180*32
+
 
 #=================================================================================================================
 
@@ -156,16 +159,30 @@ layer {
     }
   }
 }
+layer { 
+	bottom: 'G_L2_C1_T'	top: 'G_L2_C1_T'  name: 'G_L2_C1_T_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'G_L2_C1_T' top: 'G_L2_C1_T' name: 'G_L2_C1_T_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
+}
 #177*177*32
+
+
+
 layer {
-  type: "Python"
+  type: "DeleteInvalidConvdata"
   name: "valid_G_L2_C1"
   top:  "G_L2_C1"
   bottom: "G_L2_C1_T"
-  python_param {
-    module: "ReshapeLayers"
-    layer: "DeleteInvalidDataConvLayer"
-    param_str: '{"level": 1,"kernel_size": 4}'
+  crop_param {
+    num_cat: 1
+    filter_size: 4
   }
 }
 #174*174*32
@@ -200,16 +217,27 @@ layer {
     }
   }
 }
+layer { 
+	bottom: 'G_L2_C2_T'	top: 'G_L2_C2_T'  name: 'G_L2_C2_T_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'G_L2_C2_T' top: 'G_L2_C2_T' name: 'G_L2_C2_T_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
+}
 #172*172*32
 layer {
-  type: "Python"
+  type: "DeleteInvalidConvdata"
   name: "valid_G_L2_C2"
   top:  "G_L2_C2"
   bottom: "G_L2_C2_T"
-  python_param {
-    module: "ReshapeLayers"
-    layer: "DeleteInvalidDataConvLayer"
-    param_str: '{"level": 1,"kernel_size": 3}'
+  crop_param {
+    num_cat: 1
+    filter_size: 3
   }
 }
 #170*170*32
@@ -236,14 +264,12 @@ layer {
 }
 #169*169*
 layer {
-  type: "Python"
+  type: "ReshapePooling"
   name: "reshape_G_L2_P_1"
   top:  "G_L2_P"
   bottom: "G_L2_P_1"
-  python_param {
-    module: "ReshapeLayers"
-    layer: "ReshapePoolingLayer"
-    param_str: "'level': 1"
+  crop_param {
+    num_cat: 1
   }
 }
 #168*168*32
@@ -273,16 +299,27 @@ layer {
     }
   }
 }
+layer { 
+	bottom: 'G_L3_C1_T'	top: 'G_L3_C1_T'  name: 'G_L3_C1_T_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'G_L3_C1_T' top: 'G_L3_C1_T' name: 'G_L3_C1_T_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
+}
 #165*165*32
 layer {
-  type: "Python"
+  type: "DeleteInvalidConvdata"
   name: "valid_G_L3_C1"
   top:  "G_L3_C1"
   bottom: "G_L3_C1_T"
-  python_param {
-    module: "ReshapeLayers"
-    layer: "DeleteInvalidDataConvLayer"
-    param_str: '{"level": 2,"kernel_size": 4}'
+  crop_param {
+    num_cat: 2
+    filter_size: 4
   }
 }
 #156*156*32
@@ -317,16 +354,27 @@ layer {
     }
   }
 }
+layer { 
+	bottom: 'G_L3_C2_T'	top: 'G_L3_C2_T'  name: 'G_L3_C2_T_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'G_L3_C2_T' top: 'G_L3_C2_T' name: 'G_L3_C2_T_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
+}
 #154*154*32
 layer {
-  type: "Python"
+  type: "DeleteInvalidConvdata"
   name: "valid_G_L3_C2"
   top:  "G_L3_C2"
   bottom: "G_L3_C2_T"
-  python_param {
-    module: "ReshapeLayers"
-    layer: "DeleteInvalidDataConvLayer"
-    param_str: '{"level": 2,"kernel_size": 3}'
+  crop_param {
+    num_cat: 2
+    filter_size: 3
   }
 }
 #148*148*32
@@ -353,14 +401,12 @@ layer {
 }
 #147*147*
 layer {
-  type: "Python"
+  type: "ReshapePooling"
   name: "reshape_G_L3_P_1"
   top:  "G_L3_P"
   bottom: "G_L3_P_1"
-  python_param {
-    module: "ReshapeLayers"
-    layer: "ReshapePoolingLayer"
-    param_str: "'level': 2"
+  crop_param {
+    num_cat: 2
   }
 }
 #144*144*32
@@ -392,16 +438,27 @@ layer {
     }
   }
 }
+layer { 
+	bottom: 'G_L4_C1_T'	top: 'G_L4_C1_T'  name: 'G_L4_C1_T_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'G_L4_C1_T' top: 'G_L4_C1_T' name: 'G_L4_C1_T_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
+}
 #141*141*32
 layer {
-  type: "Python"
+  type: "DeleteInvalidConvdata"
   name: "valid_G_L4_C1"
 	  top:  "G_L4_C1"
   bottom: "G_L4_C1_T"
-  python_param {
-    module: "ReshapeLayers"
-    layer: "DeleteInvalidDataConvLayer"
-    param_str: '{"level": 3,"kernel_size": 4}'
+  crop_param {
+    num_cat: 3
+    filter_size: 4
   }
 }
 #120*120*32
@@ -439,16 +496,27 @@ layer {
     }
   }
 }
+layer { 
+	bottom: 'G_L4_C2_T'	top: 'G_L4_C2_T'  name: 'G_L4_C2_T_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'G_L4_C2_T' top: 'G_L4_C2_T' name: 'G_L4_C2_T_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
+}
 #118*118*32
 layer {
-  type: "Python"
+  type: "DeleteInvalidConvdata"
   name: "valid_G_L4_C2"
   top:  "G_L4_C2"
   bottom: "G_L4_C2_T"
-  python_param {
-    module: "ReshapeLayers"
-    layer: "DeleteInvalidDataConvLayer"
-    param_str: '{"level": 3,"kernel_size": 3}'
+  crop_param {
+    num_cat: 3
+    filter_size: 3
   }
 }
 #104*104*32
@@ -478,14 +546,12 @@ layer {
 }
 #103*103*
 layer {
-  type: "Python"
+  type: "ReshapePooling"
   name: "reshape_G_L4_P_1"
   top:  "G_L4_P"
   bottom: "G_L4_P_1"
-  python_param {
-    module: "ReshapeLayers"
-    layer: "ReshapePoolingLayer"
-    param_str: "'level': 3"
+  crop_param {
+    num_cat: 3
   }
 }
 #96*96*32
@@ -503,7 +569,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 64
+    num_output: 32
     kernel_size: 3
     stride: 1
     weight_filler {
@@ -514,16 +580,27 @@ layer {
     }
   }
 }
+layer { 
+	bottom: 'G_L5_C1_T'	top: 'G_L5_C1_T'  name: 'G_L5_C1_T_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'G_L5_C1_T' top: 'G_L5_C1_T' name: 'G_L5_C1_T_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
+}
 #94*94*64
 layer {
-  type: "Python"
+  type: "DeleteInvalidConvdata"
   name: "valid_G_L5_C1"
   top:  "G_L5_C1"
   bottom: "G_L5_C1_T"
-  python_param {
-    module: "ReshapeLayers"
-    layer: "DeleteInvalidDataConvLayer"
-    param_str: '{"level": 4,"kernel_size": 3}'
+  crop_param {
+    num_cat: 4
+    filter_size: 3
   }
 }
 #64*64*64
@@ -550,7 +627,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 64
+    num_output: 32
     kernel_size: 3
     stride: 1
     weight_filler {
@@ -561,16 +638,27 @@ layer {
     }
   }
 }
+layer { 
+	bottom: 'G_L5_C2_T'	top: 'G_L5_C2_T'  name: 'G_L5_C2_T_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'G_L5_C2_T' top: 'G_L5_C2_T' name: 'G_L5_C2_T_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
+}
 #62*62*64
 layer {
-  type: "Python"
+  type: "DeleteInvalidConvdata"
   name: "valid_G_L5_C2"
   top:  "G_L5_C2"
   bottom: "G_L5_C2_T"
-  python_param {
-    module: "ReshapeLayers"
-    layer: "DeleteInvalidDataConvLayer"
-    param_str: '{"level": 4,"kernel_size": 3}'
+  crop_param {
+    num_cat: 4
+    filter_size: 3
   }
 }
 
@@ -585,14 +673,13 @@ layer {
 #======================================CROP==========================================
 #====================================================================================
 layer {
-  type: "Python"
+  type: "CropDense"
   name: "crop_L_L1_C1"
   top:  "crop_L_L1_C1"
   bottom: "GlobalPatch"
-  python_param {
-    module: "ReshapeLayers"
-    layer: "CropInLevelLayer"
-    param_str: '{"level": 0,"offset": 11}'
+  crop_param {
+    num_cat: 0
+    crop_offset: 11
   }
 }
 #36*36*3
@@ -610,8 +697,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-
-    num_output: 64
+    num_output: 32
     kernel_size: 4
     stride: 1
     weight_filler {
@@ -621,6 +707,18 @@ layer {
       type: "constant"
     }
   }
+}
+layer { 
+	bottom: 'LC_L1_C1'	top: 'LC_L1_C1'  name: 'LC_L1_C1_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'LC_L1_C1' top: 'LC_L1_C1' name: 'LC_L1_C1_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
 }
 #34*34*64
 
@@ -646,10 +744,11 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 64
+    num_output: 32
+
     kernel_size: 3
     stride: 1
-    weight_filler {
+   weight_filler {
       type: "xavier"
     }
     bias_filler {
@@ -658,7 +757,18 @@ layer {
   }
 }
 
-
+layer { 
+	bottom: 'LC_L1_C2'	top: 'LC_L1_C2'  name: 'LC_L1_C2_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'LC_L1_C2' top: 'LC_L1_C2' name: 'LC_L1_C2_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
+}
 layer {
   name: "relu_LC_L1_C2"
   type: "ReLU"
@@ -670,14 +780,13 @@ layer {
 #======================================CROP==========================================
 #====================================================================================
 layer {
-  type: "Python"
+  type: "CropDense"
   name: "crop_L_L2_C1"
   top:  "crop_L_L2_C1"
   bottom: "G_L1_P"
-  python_param {
-    module: "ReshapeLayers"
-    layer: "CropInLevelLayer"
-    param_str: '{"level": 1,"offset": 35}'
+  crop_param {
+    num_cat: 1
+    crop_offset: 35
   }
 }
 #110*110*
@@ -695,7 +804,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 64
+    num_output: 32
     kernel_size: 3
     stride: 1
     weight_filler {
@@ -706,16 +815,27 @@ layer {
     }
   }
 }
+layer { 
+	bottom: 'LC_L2_C1_T'	top: 'LC_L2_C1_T'  name: 'LC_L2_C1_T_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'LC_L2_C1_T' top: 'LC_L2_C1_T' name: 'LC_L2_C1_T_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
+}
 #108*108*64
 layer {
-  type: "Python"
+  type: "DeleteInvalidConvdata"
   name: "valid_LC_L2_C1"
   top:  "LC_L2_C1"
   bottom: "LC_L2_C1_T"
-  python_param {
-    module: "ReshapeLayers"
-    layer: "DeleteInvalidDataConvLayer"
-    param_str: '{"level": 1,"kernel_size": 3}'
+  crop_param {
+    num_cat: 1
+    filter_size: 3
   }
 }
 #106*106*64
@@ -754,16 +874,27 @@ layer {
     }
   }
 }
+layer { 
+	bottom: 'LC_L2_C2_T'	top: 'LC_L2_C2_T'  name: 'LC_L2_C2_T_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'LC_L2_C2_T' top: 'LC_L2_C2_T' name: 'LC_L2_C2_T_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
+}
 #104*104*64
 layer {
-  type: "Python"
+  type: "DeleteInvalidConvdata"
   name: "valid_LC_L2_C2"
   top:  "LC_L2_C2"
   bottom: "LC_L2_C2_T"
-  python_param {
-    module: "ReshapeLayers"
-    layer: "DeleteInvalidDataConvLayer"
-    param_str: '{"level": 1,"kernel_size": 3}'
+  crop_param {
+    num_cat: 1
+    filter_size: 3
   }
 }
 
@@ -778,14 +909,13 @@ layer {
 #======================================CROP==========================================
 #====================================================================================
 layer {
-  type: "Python"
+  type: "CropDense"
   name: "crop_L_L3_C1"
   top:  "crop_L_L3_C1"
   bottom: "G_L2_P"
-  python_param {
-    module: "ReshapeLayers"
-    layer: "CropInLevelLayer"
-    param_str: '{"level": 2,"offset": 15}'
+  crop_param {
+    num_cat: 2
+    crop_offset: 15
   }
 }
 #108*108*
@@ -803,7 +933,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 64
+    num_output: 32
     kernel_size: 3
     stride: 1
     weight_filler {
@@ -814,16 +944,27 @@ layer {
     }
   }
 }
+layer { 
+	bottom: 'LC_L3_C1_T'	top: 'LC_L3_C1_T'  name: 'LC_L3_C1_T_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'LC_L3_C1_T' top: 'LC_L3_C1_T' name: 'LC_L3_C1_T_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
+}
 #106*106*64
 layer {
-  type: "Python"
+  type: "DeleteInvalidConvdata"
   name: "valid_LC_L3_C1"
   top:  "LC_L3_C1"
   bottom: "LC_L3_C1_T"
-  python_param {
-    module: "ReshapeLayers"
-    layer: "DeleteInvalidDataConvLayer"
-    param_str: '{"level": 2,"kernel_size": 3}'
+  crop_param {
+    num_cat: 2
+    filter_size: 3
   }
 }
 #100*100*64
@@ -849,7 +990,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 64
+    num_output: 32
     kernel_size: 3
     stride: 1
     weight_filler {
@@ -860,16 +1001,27 @@ layer {
     }
   }
 }
+layer { 
+	bottom: 'LC_L3_C2_T'	top: 'LC_L3_C2_T'  name: 'LC_L3_C2_T_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'LC_L3_C2_T' top: 'LC_L3_C2_T' name: 'LC_L3_C2_T_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
+}
 #98*98*64
 layer {
-  type: "Python"
+  type: "DeleteInvalidConvdata"
   name: "valid_LC_L3_C2"
   top:  "LC_L3_C2"
   bottom: "LC_L3_C2_T"
-  python_param {
-    module: "ReshapeLayers"
-    layer: "DeleteInvalidDataConvLayer"
-    param_str: '{"level": 2,"kernel_size": 3}'
+  crop_param {
+    num_cat: 2
+    filter_size: 3
   }
 }
 #92*92*64
@@ -884,14 +1036,13 @@ layer {
 #======================================CROP==========================================
 #====================================================================================
 layer {
-  type: "Python"
+  type: "CropDense"
   name: "crop_L_L4_C1"
   top:  "crop_L_L4_C1"
   bottom: "G_L3_P"
-  python_param {
-    module: "ReshapeLayers"
-    layer: "CropInLevelLayer"
-    param_str: '{"level": 3,"offset": 5}'
+  crop_param {
+    num_cat: 3
+    crop_offset: 5
   }
 }
 #104*104*
@@ -909,7 +1060,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 64
+    num_output: 32
     kernel_size: 3
     stride: 1
     weight_filler {
@@ -920,16 +1071,28 @@ layer {
     }
   }
 }
+layer { 
+	bottom: 'LC_L4_C1_T'	top: 'LC_L4_C1_T'  name: 'LC_L4_C1_T_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'LC_L4_C1_T' top: 'LC_L4_C1_T' name: 'LC_L4_C1_T_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
+}
+
 #102*102*64
 layer {
-  type: "Python"
+  type: "DeleteInvalidConvdata"
   name: "valid_LC_L4_C1"
   top:  "LC_L4_C1"
   bottom: "LC_L4_C1_T"
-  python_param {
-    module: "ReshapeLayers"
-    layer: "DeleteInvalidDataConvLayer"
-    param_str: '{"level": 3,"kernel_size": 3}'
+  crop_param {
+    num_cat: 3
+    filter_size: 3
   }
 }
 #88*88*64
@@ -958,7 +1121,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 64
+    num_output: 32
     kernel_size: 3
     stride: 1
     weight_filler {
@@ -969,16 +1132,27 @@ layer {
     }
   }
 }
+layer { 
+	bottom: 'LC_L4_C2_T'	top: 'LC_L4_C2_T'  name: 'LC_L4_C2_T_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'LC_L4_C2_T' top: 'LC_L4_C2_T' name: 'LC_L4_C2_T_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
+}
 #86*86*64
 layer {
-  type: "Python"
+  type: "DeleteInvalidConvdata"
   name: "valid_LC_L4_C2"
   top:  "LC_L4_C2"
   bottom: "LC_L4_C2_T"
-  python_param {
-    module: "ReshapeLayers"
-    layer: "DeleteInvalidDataConvLayer"
-    param_str: '{"level": 3,"kernel_size": 3}'
+  crop_param {
+    num_cat: 3
+    filter_size: 3
   }
 }
 #72*72*64
@@ -993,62 +1167,55 @@ layer {
 #======================================Concat========================================
 #====================================================================================
 layer {
-  type: "Python"
+  type: "Restore"
   name: "Restore_LC_L1_C2"
   top:  "Restore_LC_L1_C2"
   bottom: "LC_L1_C2"
-  python_param {
-    module: "ReshapeLayers"
-    layer: "RestoreLayer"
-    param_str: "'level': 0"
+  crop_param {
+    num_cat: 0
   }
 }
 #32*32*64
 layer {
-  type: "Python"
+  type: "Restore"
   name: "Restore_LC_L2_C2"
   top:  "Restore_LC_L2_C2"
   bottom: "LC_L2_C2"
-  python_param {
-    module: "ReshapeLayers"
-    layer: "RestoreLayer"
-    param_str: "'level': 1"
+  crop_param {
+    num_cat: 1
   }
 }
+
+
+
 #102*102*64
 layer {
-  type: "Python"
+  type: "Restore"
   name: "Restore_LC_L3_C2"
   top:  "Restore_LC_L3_C2"
   bottom: "LC_L3_C2"
-  python_param {
-    module: "ReshapeLayers"
-    layer: "RestoreLayer"
-    param_str: "'level': 2"
+  crop_param {
+    num_cat: 2
   }
 }
 #92*92*64
 layer {
-  type: "Python"
+  type: "Restore"
   name: "Restore_LC_L4_C2"
   top:  "Restore_LC_L4_C2"
   bottom: "LC_L4_C2"
-  python_param {
-    module: "ReshapeLayers"
-    layer: "RestoreLayer"
-    param_str: "'level': 3"
+  crop_param {
+    num_cat: 3
   }
 }
 #72*72*64
 layer {
-  type: "Python"
+  type: "Restore"
   name: "Restore_G_L5_C2"
   top:  "Restore_G_L5_C2"
   bottom: "G_L5_C2"
-  python_param {
-    module: "ReshapeLayers"
-    layer: "RestoreLayer"
-    param_str: "'level': 4"
+  crop_param {
+    num_cat: 4
   }
 }
 #32*32*64
@@ -1069,12 +1236,12 @@ layer {
   bottom: "feature"
   top: "feature"
   dropout_param {
-    dropout_ratio: 0.5
+    dropout_ratio: 0.2
   }
 }
 
 layer {
-  name: "FC1"
+  name: "FC1_conv"
   type: "Convolution"
   bottom: "feature"
   top: "FC1"
@@ -1096,7 +1263,18 @@ layer {
     }
   }
 }
-
+layer { 
+	bottom: 'FC1'	top: 'FC1'  name: 'FC1_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'FC1' top: 'FC1' name: 'FC1_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
+}
 
 layer {
   name: "relu_FC1"
@@ -1132,14 +1310,14 @@ layer {
 }
 
 
+
+
 layer {
   name: "prob"
   type: "Softmax"
   bottom: "FC2"
   top: "prob"
 }
-
-
 
 
 
