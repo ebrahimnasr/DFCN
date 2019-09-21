@@ -1,10 +1,14 @@
+# Enter your network definition here.
+# Use Shift+Enter to update the visualization.
+# Enter your network definition here.
+# Use Shift+Enter to update the visualization.
 
 name: "DFCN"
 layer {
   name: "Skin"
   type: "HDF5Data"
   top: "GlobalPatch"
-  top: "Weight"
+#top: "Weight"
   top: "LabelPatch"
 
   hdf5_data_param {
@@ -18,7 +22,7 @@ layer {
   name: "Skin"
   type: "HDF5Data"
   top: "GlobalPatch"
-  top: "Weight"
+#top: "Weight"
   top: "LabelPatch"
   hdf5_data_param {
     source: "./Model/TestDatasetAddress.txt"
@@ -52,6 +56,18 @@ layer {
     }
   }
 }
+layer { 
+	bottom: 'G_L1_C1'	top: 'G_L1_C1'  name: 'G_L1_C1_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'G_L1_C1' top: 'G_L1_C1' name: 'G_L1_C1_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
+}
 #183*183*32
 
 layer {
@@ -60,10 +76,6 @@ layer {
   bottom: "G_L1_C1"
   top: "G_L1_C1"
 }
-
-
-
-
 
 layer {
   name: "G_L1_C2"
@@ -87,6 +99,18 @@ layer {
       type: "constant"
     }
   }
+}
+layer { 
+	bottom: 'G_L1_C2'	top: 'G_L1_C2'  name: 'G_L1_C2_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'G_L1_C2' top: 'G_L1_C2' name: 'G_L1_C2_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
 }
 #181*181*32
 
@@ -152,6 +176,18 @@ layer {
     }
   }
 }
+layer { 
+	bottom: 'G_L2_C1_T'	top: 'G_L2_C1_T'  name: 'G_L2_C1_T_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'G_L2_C1_T' top: 'G_L2_C1_T' name: 'G_L2_C1_T_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
+}
 #177*177*32
 
 
@@ -197,6 +233,18 @@ layer {
       type: "constant"
     }
   }
+}
+layer { 
+	bottom: 'G_L2_C2_T'	top: 'G_L2_C2_T'  name: 'G_L2_C2_T_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'G_L2_C2_T' top: 'G_L2_C2_T' name: 'G_L2_C2_T_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
 }
 #172*172*32
 layer {
@@ -268,6 +316,18 @@ layer {
     }
   }
 }
+layer { 
+	bottom: 'G_L3_C1_T'	top: 'G_L3_C1_T'  name: 'G_L3_C1_T_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'G_L3_C1_T' top: 'G_L3_C1_T' name: 'G_L3_C1_T_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
+}
 #165*165*32
 layer {
   type: "DeleteInvalidConvdata"
@@ -310,6 +370,18 @@ layer {
       type: "constant"
     }
   }
+}
+layer { 
+	bottom: 'G_L3_C2_T'	top: 'G_L3_C2_T'  name: 'G_L3_C2_T_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'G_L3_C2_T' top: 'G_L3_C2_T' name: 'G_L3_C2_T_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
 }
 #154*154*32
 layer {
@@ -383,6 +455,18 @@ layer {
     }
   }
 }
+layer { 
+	bottom: 'G_L4_C1_T'	top: 'G_L4_C1_T'  name: 'G_L4_C1_T_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'G_L4_C1_T' top: 'G_L4_C1_T' name: 'G_L4_C1_T_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
+}
 #141*141*32
 layer {
   type: "DeleteInvalidConvdata"
@@ -428,6 +512,18 @@ layer {
       type: "constant"
     }
   }
+}
+layer { 
+	bottom: 'G_L4_C2_T'	top: 'G_L4_C2_T'  name: 'G_L4_C2_T_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'G_L4_C2_T' top: 'G_L4_C2_T' name: 'G_L4_C2_T_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
 }
 #118*118*32
 layer {
@@ -490,7 +586,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 64
+    num_output: 32
     kernel_size: 3
     stride: 1
     weight_filler {
@@ -500,6 +596,18 @@ layer {
       type: "constant"
     }
   }
+}
+layer { 
+	bottom: 'G_L5_C1_T'	top: 'G_L5_C1_T'  name: 'G_L5_C1_T_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'G_L5_C1_T' top: 'G_L5_C1_T' name: 'G_L5_C1_T_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
 }
 #94*94*64
 layer {
@@ -536,7 +644,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 64
+    num_output: 32
     kernel_size: 3
     stride: 1
     weight_filler {
@@ -546,6 +654,18 @@ layer {
       type: "constant"
     }
   }
+}
+layer { 
+	bottom: 'G_L5_C2_T'	top: 'G_L5_C2_T'  name: 'G_L5_C2_T_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'G_L5_C2_T' top: 'G_L5_C2_T' name: 'G_L5_C2_T_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
 }
 #62*62*64
 layer {
@@ -594,7 +714,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 64
+    num_output: 32
     kernel_size: 4
     stride: 1
     weight_filler {
@@ -604,6 +724,18 @@ layer {
       type: "constant"
     }
   }
+}
+layer { 
+	bottom: 'LC_L1_C1'	top: 'LC_L1_C1'  name: 'LC_L1_C1_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'LC_L1_C1' top: 'LC_L1_C1' name: 'LC_L1_C1_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
 }
 #34*34*64
 
@@ -629,7 +761,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 64
+    num_output: 32
 
     kernel_size: 3
     stride: 1
@@ -642,7 +774,18 @@ layer {
   }
 }
 
-
+layer { 
+	bottom: 'LC_L1_C2'	top: 'LC_L1_C2'  name: 'LC_L1_C2_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'LC_L1_C2' top: 'LC_L1_C2' name: 'LC_L1_C2_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
+}
 layer {
   name: "relu_LC_L1_C2"
   type: "ReLU"
@@ -678,7 +821,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 64
+    num_output: 32
     kernel_size: 3
     stride: 1
     weight_filler {
@@ -688,6 +831,18 @@ layer {
       type: "constant"
     }
   }
+}
+layer { 
+	bottom: 'LC_L2_C1_T'	top: 'LC_L2_C1_T'  name: 'LC_L2_C1_T_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'LC_L2_C1_T' top: 'LC_L2_C1_T' name: 'LC_L2_C1_T_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
 }
 #108*108*64
 layer {
@@ -736,6 +891,18 @@ layer {
     }
   }
 }
+layer { 
+	bottom: 'LC_L2_C2_T'	top: 'LC_L2_C2_T'  name: 'LC_L2_C2_T_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'LC_L2_C2_T' top: 'LC_L2_C2_T' name: 'LC_L2_C2_T_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
+}
 #104*104*64
 layer {
   type: "DeleteInvalidConvdata"
@@ -783,7 +950,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 64
+    num_output: 32
     kernel_size: 3
     stride: 1
     weight_filler {
@@ -793,6 +960,18 @@ layer {
       type: "constant"
     }
   }
+}
+layer { 
+	bottom: 'LC_L3_C1_T'	top: 'LC_L3_C1_T'  name: 'LC_L3_C1_T_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'LC_L3_C1_T' top: 'LC_L3_C1_T' name: 'LC_L3_C1_T_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
 }
 #106*106*64
 layer {
@@ -828,7 +1007,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 64
+    num_output: 32
     kernel_size: 3
     stride: 1
     weight_filler {
@@ -838,6 +1017,18 @@ layer {
       type: "constant"
     }
   }
+}
+layer { 
+	bottom: 'LC_L3_C2_T'	top: 'LC_L3_C2_T'  name: 'LC_L3_C2_T_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'LC_L3_C2_T' top: 'LC_L3_C2_T' name: 'LC_L3_C2_T_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
 }
 #98*98*64
 layer {
@@ -886,7 +1077,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 64
+    num_output: 32
     kernel_size: 3
     stride: 1
     weight_filler {
@@ -897,6 +1088,19 @@ layer {
     }
   }
 }
+layer { 
+	bottom: 'LC_L4_C1_T'	top: 'LC_L4_C1_T'  name: 'LC_L4_C1_T_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'LC_L4_C1_T' top: 'LC_L4_C1_T' name: 'LC_L4_C1_T_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
+}
+
 #102*102*64
 layer {
   type: "DeleteInvalidConvdata"
@@ -934,7 +1138,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 64
+    num_output: 32
     kernel_size: 3
     stride: 1
     weight_filler {
@@ -944,6 +1148,18 @@ layer {
       type: "constant"
     }
   }
+}
+layer { 
+	bottom: 'LC_L4_C2_T'	top: 'LC_L4_C2_T'  name: 'LC_L4_C2_T_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'LC_L4_C2_T' top: 'LC_L4_C2_T' name: 'LC_L4_C2_T_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
 }
 #86*86*64
 layer {
@@ -1037,12 +1253,12 @@ layer {
   bottom: "feature"
   top: "feature"
   dropout_param {
-    dropout_ratio: 0.5
+    dropout_ratio: 0.2
   }
 }
 
 layer {
-  name: "FC1"
+  name: "FC1_conv"
   type: "Convolution"
   bottom: "feature"
   top: "FC1"
@@ -1064,7 +1280,18 @@ layer {
     }
   }
 }
-
+layer { 
+	bottom: 'FC1'	top: 'FC1'  name: 'FC1_BN' type: 'BatchNorm'
+  	batch_norm_param {use_global_stats: false  moving_average_fraction: 0.999 }
+ 	param { lr_mult: 0 } 
+  	param { lr_mult: 0 } 
+     }
+layer{
+ 	bottom: 'FC1' top: 'FC1' name: 'FC1_SC' type: 'Scale'
+  	scale_param { bias_term: true    axis: 1      num_axes: 1    filler { type: 'constant' value: 1 }         
+    	bias_filler { type: 'constant' value: 0.001 }  # initialize bias
+      }
+}
 
 layer {
   name: "relu_FC1"
@@ -1102,23 +1329,13 @@ layer {
 
 
 
-
-
-
-
-
-
 layer {
-  type: "Python"
-  name: "loss"
-  bottom: "FC2"
-  bottom: "LabelPatch"
-  bottom: "Weight"
-  top: "loss"
-  python_param {
-    module: "ReshapeLayers"
-    layer: "MySoftMaxWithLossLayer"
-  }
-  loss_weight: 1
+type: "SoftmaxWithLoss"
+name: "loss_cross"
+bottom: "FC2"
+bottom: "LabelPatch"
+top: "loss"
 }
+
+
 
